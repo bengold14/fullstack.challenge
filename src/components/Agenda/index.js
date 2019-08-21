@@ -8,6 +8,7 @@ import type Account from "src/models/Account";
 
 import List from "./List";
 import EventCell from "./EventCell";
+import EventSelector from "./EventSelector";
 
 import style from "./style";
 
@@ -28,6 +29,7 @@ class Agenda extends Component<tProps> {
    * Return events from all calendars, sorted by date-time.
    * Returned objects contain both Event and corresponding Calendar
    */
+
   @observable selectedEvents: Array = null;
 
   @computed
@@ -43,18 +45,21 @@ class Agenda extends Component<tProps> {
 
   set events(selection: number) {
     let events = null;
+
     if (selection !== "show all") {
+      //filter events by calendar id
       const calendar = this.props.account.calendars.filter(
         calendar => calendar.id === selection
       )[0];
-      events = calendar.events.map(event => {
-        if (event) {
-          return { calendar, event };
-        }
-      });
+      events = calendar.events.map(event => ({
+        calendar,
+        event
+      }));
+
       // Sort events by date-time, ascending
       events.sort((a, b) => a.event.date.diff(b.event.date).valueOf());
     }
+
     this.selectedEvents = events;
   }
 
@@ -65,20 +70,12 @@ class Agenda extends Component<tProps> {
           <div className={style.header}>
             <span className={style.title}>{this.props.account.greeting}</span>
           </div>
-          <select
-            onChange={e => {
-              this.events = e.target.value;
-            }}
-          >
-            {this.props.account.calendars.map((calendar, index) => {
-              return (
-                <option value={calendar.id} key={index}>
-                  {calendar.color}
-                </option>
-              );
-            })}
-            <option value={"show all"}>show all</option>
-          </select>
+          <EventSelector
+            calendars={this.props.account.calendars}
+            events={(e => {
+              this.events = e;
+            }).bind(this)}
+          />
           <List>
             {(this.selectedEvents ? this.selectedEvents : this.events).map(
               ({ calendar, event }) => (

@@ -28,6 +28,11 @@
   padding: 16px 0 12px 16px;
 }
 
+.select {
+  display: block;
+  padding: 0 0 12px 16px;
+}
+
 .header {
   @include title-text;
   color: $blackColor;
