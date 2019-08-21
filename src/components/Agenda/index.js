@@ -7,7 +7,6 @@ import { observer, inject } from "mobx-react";
 import type Account from "src/models/Account";
 
 import List from "./List";
-import EventCell from "./EventCell";
 import EventSelector from "./EventSelector";
 
 import style from "./style";
@@ -31,6 +30,7 @@ class Agenda extends Component<tProps> {
    */
 
   @observable selectedEvents: Array = null;
+  @observable showDepartments: Boolean = false;
 
   @computed
   get events(): Array<{ calendar: Calendar, event: Event }> {
@@ -43,7 +43,7 @@ class Agenda extends Component<tProps> {
     return events;
   }
 
-  set events(selection: number) {
+  setSelectedEvents(selection: number) {
     let events = null;
 
     if (selection !== "show all") {
@@ -51,6 +51,7 @@ class Agenda extends Component<tProps> {
       const calendar = this.props.account.calendars.filter(
         calendar => calendar.id === selection
       )[0];
+
       events = calendar.events.map(event => ({
         calendar,
         event
@@ -63,6 +64,10 @@ class Agenda extends Component<tProps> {
     this.selectedEvents = events;
   }
 
+  toggleShowDepartments() {
+    this.showDepartments = !this.showDepartments;
+  }
+
   render() {
     return (
       <div className={style.outer}>
@@ -70,19 +75,27 @@ class Agenda extends Component<tProps> {
           <div className={style.header}>
             <span className={style.title}>{this.props.account.greeting}</span>
           </div>
-          <EventSelector
-            calendars={this.props.account.calendars}
-            events={(e => {
-              this.events = e;
-            }).bind(this)}
+          <div className={style.selector}>
+            <EventSelector
+              calendars={this.props.account.calendars}
+              setSelectedEvents={(e => {
+                this.setSelectedEvents(e);
+              }).bind(this)}
+            />
+            <button
+              onClick={(() => {
+                this.toggleShowDepartments();
+              }).bind(this)}
+              className={style.button}
+            >
+              toggle departments
+            </button>
+          </div>
+          <List
+            showDepartments={this.showDepartments}
+            selectedEvents={this.selectedEvents}
+            events={this.events}
           />
-          <List>
-            {(this.selectedEvents ? this.selectedEvents : this.events).map(
-              ({ calendar, event }) => (
-                <EventCell key={event.id} calendar={calendar} event={event} />
-              )
-            )}
-          </List>
         </div>
       </div>
     );

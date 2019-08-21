@@ -14,15 +14,20 @@ import style from "./style";
  * Displays time of event, title and department (if any)
  */
 
-export default observer(props => {
+type tProps = {
+  setSelectedEvents: Function,
+  calendars: Array
+};
+
+export default observer(({ setSelectedEvents, calendars }: tProps) => {
   return (
-    <div className={style.select}>
+    <span className={style.select}>
       <select
         onChange={e => {
-          props.events(e.target.value);
+          setSelectedEvents(e.target.value);
         }}
       >
-        {props.calendars.map((calendar, index) => {
+        {calendars.map((calendar, index) => {
           return (
             <option value={calendar.id} key={index}>
               {calendar.color}
@@ -31,6 +36,6 @@ export default observer(props => {
         })}
         <option value={"show all"}>show all</option>
       </select>
-    </div>
+    </span>
   );
 });
