@@ -1,18 +1,18 @@
 // @flow
 
-import React, { Component } from 'react'
-import { DateTime } from 'luxon'
-import { computed } from 'mobx'
-import { observer, inject } from 'mobx-react'
+import React, { Component } from "react";
+import { DateTime } from "luxon";
+import { computed } from "mobx";
+import { observer, inject } from "mobx-react";
 
-import greeting from 'lib/greeting'
+import greeting from "lib/greeting";
 
-import type Account from 'src/models/Account'
+import type Account from "src/models/Account";
 
-import List from './List'
-import EventCell from './EventCell'
+import List from "./List";
+import EventCell from "./EventCell";
 
-import style from './style'
+import style from "./style";
 
 /**
  * Agenda component
@@ -22,9 +22,9 @@ import style from './style'
 
 type tProps = {
   account: Account
-}
+};
 
-@inject('account')
+@inject("account")
 @observer
 class Agenda extends Component<tProps> {
   /**
@@ -32,30 +32,23 @@ class Agenda extends Component<tProps> {
    * Returned objects contain both Event and corresponding Calendar
    */
   @computed
-  get events (): Array<{ calendar: Calendar, event: Event }> {
+  get events(): Array<{ calendar: Calendar, event: Event }> {
     const events = this.props.account.calendars
-      .map((calendar) => (
-        calendar.events.map((event) => (
-          { calendar, event }
-        ))
-      ))
-      .flat()
+      .map(calendar => calendar.events.map(event => ({ calendar, event })))
+      .flat();
 
     // Sort events by date-time, ascending
-    events.sort((a, b) => (a.event.date.diff(b.event.date).valueOf()))
+    events.sort((a, b) => a.event.date.diff(b.event.date).valueOf());
 
-    return events
+    return events;
   }
 
-  render () {
+  render() {
     return (
       <div className={style.outer}>
         <div className={style.container}>
-
           <div className={style.header}>
-            <span className={style.title}>
-              {greeting(DateTime.local().hour)}
-            </span>
+            <span className={style.title}>{this.props.account.greeting}</span>
           </div>
 
           <List>
@@ -63,11 +56,10 @@ class Agenda extends Component<tProps> {
               <EventCell key={event.id} calendar={calendar} event={event} />
             ))}
           </List>
-
         </div>
       </div>
-    )
+    );
   }
 }
 
-export default Agenda
+export default Agenda;

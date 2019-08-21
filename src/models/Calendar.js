@@ -1,18 +1,16 @@
 // @flow
 
-import uuid from 'uuid/v4'
-import { observable } from 'mobx'
+import uuid from "uuid/v4";
+import { observable } from "mobx";
 
-import type Event from './Event'
+import type Event from "./Event";
 
 class Calendar {
-  id: string = uuid()
-
+  id: string = uuid();
   @observable
-  color: string = '#f9f9fa'
-
+  color: string = "#f9f9fa";
   @observable
-  events: Array<Event> = []
+  events: Array<Event> = [];
 }
 
-export default Calendar
+export default Calendar;
